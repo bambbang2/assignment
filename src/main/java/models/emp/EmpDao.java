@@ -10,6 +10,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Member;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,6 +23,20 @@ public class EmpDao {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    /**
+    public static Emp selectByEMPNO(String EMPNO) {
+        String sql = "SELECT * FROM Emp WHERE SELECTBYEMPNO = ?";
+        List<Emp> results = jdbcTemplate.query(sql, (rs, rowNum) -> {
+                        Emp emp = new Emp(
+                                rs.getString("EMPNO"),
+                                rs.getString("ENAME"),
+                                rs.getString("JOB");
+                        return emp;
+                    }, EMPNO);
+        return results.isEmpty() ? null : results.get(0);
+    }
+     */
 
     @Transactional
     public long insert(Emp emp) {
@@ -43,12 +58,12 @@ public class EmpDao {
     }
 
     @Transactional
-    public long update(Emp emp) {
-        String sql = "UPDATE EMP2 SET JOB = ? WHERE EMPNO";
+    public long update(long no) {
+        String sql = "UPDATE EMP2 SET JOB = ? WHERE EMPNO = ?";
         KeyHolder holder = new GeneratedKeyHolder();
         jdbcTemplate.update(conn -> {
             PreparedStatement ps = conn.prepareStatement(sql, new String[]{"EMPNO"});
-            ps.setString(1, emp.getJOB());
+            ps.setLong(1, no);
             return ps;
         }, holder);
 
